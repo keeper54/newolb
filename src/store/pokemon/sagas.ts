@@ -1,5 +1,5 @@
 import { all, call, fork, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import { PokemonActionTypes, PokemonList, Pokemon, PokemonState } from './types'
+import { PokemonActionTypes } from './types'
 import { getPokemonById, getError, getPokemonList } from './actions'
 import { callApi } from '../../utils/api'
 

@@ -1,7 +1,5 @@
 import * as React from 'react'
-import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import moment from 'moment'
 
 import styled from '../../utils/styled'
 import Page from '../../components/layout/Page'
@@ -33,14 +31,11 @@ type AllProps = PropsFromState & PropsFromDispatch & ConnectedReduxProps
 
 class PokemonIndexPage extends React.Component<AllProps> {
   public componentDidMount() {
-    const { data } = this.props
-
-    if (data.results.length === 0) {
-      this.props.getPokemonList()
-    }
+    this.props.getPokemonList()
   }
 
   public render() {
+    this.props.getPokemonList()
     const { loading } = this.props
 
     return (
@@ -69,11 +64,12 @@ class PokemonIndexPage extends React.Component<AllProps> {
         columns={['id', 'Name', 'api url']}
         widths={['auto', 'auto', 'auto']}
       >
+        {console.log(data)}
         {data.results.slice(0, 20).map((pokemon, i) => {
 
           return (
             <tr key={i}>
-              <td>{i + 1}</td>
+              <td>{i}</td>
               <td>{pokemon.name}</td>
               <td>{pokemon.url}</td>
             </tr>

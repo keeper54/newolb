@@ -87,11 +87,6 @@ const DriverInfoWrapper = styled('div')`
   min-height: 200px;
 `
 
-const InputTypeText = styled('input')`
-  flex: 1 1 auto;
-  height: 100%;
-  margin-left: 1rem;
-`
 const DivWrapper = styled('div')`
   position: relative;
   max-width: ${props => props.theme.widths.md};
