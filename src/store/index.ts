@@ -12,12 +12,17 @@ import { teamsReducer } from './teams/reducer'
 import { DriverInfoState } from './driverInfo/types';
 import { driverInfoReducer } from './driverInfo/reducer';
 
+import pokemonSaga from './pokemon/sagas'
+import { pokemonReducer } from './pokemon/reducer';
+import { PokemonState } from './pokemon/types';
+
 // The top-level state object
 export interface ApplicationState {
   layout: LayoutState
   heroes: HeroesState
   teams: TeamsState
   driversInformation: DriverInfoState
+  pokemon: PokemonState;
 }
 
 // Additional props for connected React components. This prop is passed by default with `connect()`
@@ -32,12 +37,13 @@ export const rootReducer = combineReducers<ApplicationState>({
   layout: layoutReducer,
   heroes: heroesReducer,
   teams: teamsReducer,
-  driversInformation: driverInfoReducer
+  driversInformation: driverInfoReducer,
+  pokemon: pokemonReducer
 })
 
 // Here we use `redux-saga` to trigger actions asynchronously. `redux-saga` uses something called a
 // "generator function", which you can read about here:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*
 export function* rootSaga() {
-  yield all([fork(heroesSaga), fork(teamsSaga)])
+  yield all([fork(heroesSaga), fork(teamsSaga), fork(pokemonSaga)])
 }

@@ -28,6 +28,9 @@ const Header: React.SFC<HeaderProps> = ({ title }) => (
         <HeaderNavLink to="/driverInfo" activeClassName={HeaderLinkActive}>
           Driver Info
         </HeaderNavLink>
+        <HeaderNavLink to="/pokemon" activeClassName={HeaderLinkActive}>
+          Pokemon List
+        </HeaderNavLink>
       </HeaderNav>
       <HeaderRight>
         <LayoutContainer>

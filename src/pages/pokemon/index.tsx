@@ -1,60 +1,85 @@
 import * as React from 'react'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import moment from 'moment'
 
 import styled from '../../utils/styled'
 import Page from '../../components/layout/Page'
 import Container from '../../components/layout/Container'
+import DataTable from '../../components/layout/DataTable'
+import LoadingOverlay from '../../components/data/LoadingOverlay'
+import LoadingOverlayInner from '../../components/data/LoadingOverlayInner'
+import LoadingSpinner from '../../components/data/LoadingSpinner'
 
 import { ApplicationState, ConnectedReduxProps } from '../../store'
-import { DriverInfo } from '../../store/driverInfo/types'
-import { fetchRequest } from '../../store/driverInfo/actions'
+import { PokemonList } from '../../store/pokemon/types'
+import { getPokemonList } from '../../store/pokemon/actions'
 import { Dispatch } from 'redux';
 
 // Separate state props + dispatch props to their own interfaces.
 interface PropsFromState {
-  data: DriverInfo
+  loading: boolean
+  data: PokemonList
   errors?: string
 }
 
 // We can use `typeof` here to map our dispatch types to the props, like so.
 interface PropsFromDispatch {
-  fetchRequest: typeof fetchRequest
+  getPokemonList: typeof getPokemonList
 }
 
 // Combine both state + dispatch props - as well as any props we want to pass - in a union type.
 type AllProps = PropsFromState & PropsFromDispatch & ConnectedReduxProps
 
-class DriverInfoIndexPage extends React.Component<AllProps> {
+class PokemonIndexPage extends React.Component<AllProps> {
   public componentDidMount() {
-    this.props.fetchRequest()
+    const { data } = this.props
+
+    if (data.results.length === 0) {
+      this.props.getPokemonList()
+    }
   }
 
   public render() {
+    const { loading } = this.props
+
     return (
       <Page>
         <Container>
-          <DriverInfoWrapper>
-            Hello Buddy! <br />
+          <TableWrapper>
+            {loading && (
+              <LoadingOverlay>
+                <LoadingOverlayInner>
+                  <LoadingSpinner />
+                </LoadingOverlayInner>
+              </LoadingOverlay>
+            )}
             {this.renderData()}
-          </DriverInfoWrapper>
+          </TableWrapper>
         </Container>
       </Page>
     )
   }
 
   private renderData() {
-    const { data } = this.props;
-    const { errors } = this.props;
+    const { data } = this.props
+
     return (
-      <DivWrapper>
-        <DriverInfoDetail>
-          {data.birthdate}
-          {errors}
-        </DriverInfoDetail>
-        <DriverName>
-          {data.drivers.primary.firstName}
-        </DriverName>
-      </DivWrapper>
+      <DataTable
+        columns={['id', 'Name', 'api url']}
+        widths={['auto', 'auto', 'auto']}
+      >
+        {data.results.slice(0, 20).map((pokemon, i) => {
+
+          return (
+            <tr key={i}>
+              <td>{i + 1}</td>
+              <td>{pokemon.name}</td>
+              <td>{pokemon.url}</td>
+            </tr>
+          )
+        })}
+      </DataTable>
     )
   }
 }
@@ -62,15 +87,16 @@ class DriverInfoIndexPage extends React.Component<AllProps> {
 // It's usually good practice to only include one context at a time in a connected component.
 // Although if necessary, you can always include multiple contexts. Just make sure to
 // separate them from each other to prevent prop conflicts.
-const mapStateToProps = ({ driversInformation }: ApplicationState) => ({
-  errors: driversInformation.errors,
-  data: driversInformation.data
+const mapStateToProps = ({ pokemon }: ApplicationState) => ({
+  loading: pokemon.loading,
+  errors: pokemon.errors,
+  data: pokemon.data
 })
 
 // mapDispatchToProps is especially useful for constraining our actions to the connected component.
 // You can access these via `this.props`.
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  fetchRequest: () => dispatch(fetchRequest())
+  fetchRequest: () => dispatch(getPokemonList())
 })
 
 // Now let's connect our component!
@@ -78,40 +104,11 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(DriverInfoIndexPage)
+)(PokemonIndexPage)
 
-const DriverInfoWrapper = styled('div')`
+const TableWrapper = styled('div')`
   position: relative;
   max-width: ${props => props.theme.widths.md};
   margin: 0 auto;
   min-height: 200px;
-`
-
-const InputTypeText = styled('input')`
-  flex: 1 1 auto;
-  height: 100%;
-  margin-left: 1rem;
-`
-const DivWrapper = styled('div')`
-  position: relative;
-  max-width: ${props => props.theme.widths.md};
-  margin: 0 auto;
-  min-height: 200px;
-`
-
-const DriverInfoDetail = styled('div')`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  min-height: 66px;
-`
-
-const DriverName = styled('div')`
-  flex: 1 1 auto;
-  height: 100%;
-  margin-left: 1rem;
-
-  a {
-    color: ${props => props.theme.colors.brand};
-  }
 `
